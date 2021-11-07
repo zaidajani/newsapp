@@ -2,72 +2,47 @@ import React, { Component } from "react";
 import Newsitem from "./Newsitem";
 
 export class News extends Component {
-  articles = [
-    {
-      source: {
-        id: "bbc-sport",
-        name: "BBC Sport",
-      },
-      author: "BBC Sport",
-      title: "Yorkshire cricket racism scandal - how we got here",
-      description:
-        "BBC Sport timelines the stages of the Azeem Rafiq racism scandal which has engulfed Yorkshire County Cricket Club and English cricket.",
-      url: "http://www.bbc.co.uk/sport/cricket/59166142",
-      urlToImage:
-        "https://ichef.bbci.co.uk/live-experience/cps/624/cpsprodpb/14229/production/_121437428_shutterstock_editorial_8827466h.jpg",
-      publishedAt: "2021-11-04T21:07:27.8995717Z",
-      content:
-        "Azeem Rafiq became the youngest man to captain Yorkshire in 2012\r\nIt is the scandal that has engulfed cricket.\r\nOne of England's most historic sporting clubs embroiled in a damning episode, accused o… [+6113 chars]",
-    },
-    {
-      source: {
-        id: "espn-cric-info",
-        name: "ESPN Cric Info",
-      },
-      author: null,
-      title:
-        "PCB hands Umar Akmal three-year ban from all cricket | ESPNcricinfo.com",
-      description:
-        "Penalty after the batsman pleaded guilty to not reporting corrupt approaches | ESPNcricinfo.com",
-      url: "http://www.espncricinfo.com/story/_/id/29103103/pcb-hands-umar-akmal-three-year-ban-all-cricket",
-      urlToImage:
-        "https://a4.espncdn.com/combiner/i?img=%2Fi%2Fcricket%2Fcricinfo%2F1099495_800x450.jpg",
-      publishedAt: "2020-04-27T11:41:47Z",
-      content:
-        "Umar Akmal's troubled cricket career has hit its biggest roadblock yet, with the PCB handing him a ban from all representative cricket for three years after he pleaded guilty of failing to report det… [+1506 chars]",
-    },
-    {
-      source: {
-        id: "espn-cric-info",
-        name: "ESPN Cric Info",
-      },
-      author: null,
-      title:
-        "What we learned from watching the 1992 World Cup final in full again | ESPNcricinfo.com",
-      description:
-        "Wides, lbw calls, swing - plenty of things were different in white-ball cricket back then | ESPNcricinfo.com",
-      url: "http://www.espncricinfo.com/story/_/id/28970907/learned-watching-1992-world-cup-final-full-again",
-      urlToImage:
-        "https://a4.espncdn.com/combiner/i?img=%2Fi%2Fcricket%2Fcricinfo%2F1219926_1296x729.jpg",
-      publishedAt: "2020-03-30T15:26:05Z",
-      content:
-        "Last week, we at ESPNcricinfo did something we have been thinking of doing for eight years now: pretend-live ball-by-ball commentary for a classic cricket match. We knew the result, yes, but we tried… [+6823 chars]",
-    },
-  ];
   constructor() {
     super();
     console.log("hello bro, I am a constructor from news component");
     this.state = {
-      articles: this.articles,
+      articles: [],
       loading: false,
+      page: 1,
     };
   }
 
   async componentDidMount() {
-    let url = "https://newsapi.org/v2/top-headlines?country=us&apiKey=27112c5b82de4da2b0860df903f501d6";
+    let url =
+      "https://newsapi.org/v2/top-headlines?country=in&apiKey=27112c5b82de4da2b0860df903f501d6";
     let data = await fetch(url);
-    let parsedData = data.json();
+    let parsedData = await data.json();
     console.log(parsedData);
+    this.setState({ articles: parsedData.articles });
+  }
+
+  handlePrevClick = async () => {
+    let url =
+    // `https://newsapi.org/v2/top-headlines?country=in&apiKey=27112c5b82de4da2b0860df903f501d6&page=${this.state.page - 1}`;
+    let data = await fetch(url);
+    let parsedData = await data.json();
+    console.log(parsedData);
+    this.setState({
+      page: this.state.page - 1,
+      articles: parsedData.articles
+    });
+  }
+
+  handleNextClick = async () => {
+    // let url =
+    //   `https://newsapi.org/v2/top-headlines?country=in&apiKey=27112c5b82de4da2b0860df903f501d6&page=${this.state.page + 1}`;
+    let data = await fetch(url);
+    let parsedData = await data.json();
+    console.log(parsedData);
+    this.setState({
+      page: this.state.page + 1,
+      articles: parsedData.articles
+    });
   }
 
   render() {
@@ -79,14 +54,28 @@ export class News extends Component {
             return (
               <div className="col-md-4" key={element.url}>
                 <Newsitem
-                  title={element.title.slice(0, 30) + " ..."}
-                  description={element.description.slice(0, 88) + "   ..."}
-                  imageurl={element.urlToImage}
+                  title={element.title ? element.title.slice(0, 30) : ""}
+                  description={
+                    element.description ? element.description.slice(0, 88) : ""
+                  }
+                  imageurl={
+                    element.urlToImage
+                      ? element.urlToImage
+                      : "https://cdn.cnn.com/cnnnext/dam/assets/211105212006-01-pollution-diwali-india-delhi-1105-super-tease.jpg"
+                  }
                   newsUrl={element.url}
                 />
               </div>
             );
           })}
+        </div>
+        <div className="container my-5 d-flex justify-content-between">
+          <button type="button" disabled={this.state.page<=1} class="btn btn-dark" onClick={this.handlePrevClick}>
+          &larr; Previous
+          </button>
+          <button type="button" class="btn btn-dark" onClick={this.handleNextClick}>
+            Next &rarr;
+          </button>
         </div>
       </div>
     );
